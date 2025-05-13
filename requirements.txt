@@ -1,0 +1,4 @@
+flask
+yt-dlp
+python-dotenv
+firebase-admin

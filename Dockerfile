@@ -22,11 +22,13 @@ RUN pip install --no-cache-dir yt-dlp flask
 # Create application directory
 WORKDIR /app
 
+# Copiar e instalar dependências Python
+COPY requirements.txt /app/
+RUN pip install --no-cache-dir --upgrade pip
+RUN pip install --no-cache-dir -r requirements.txt
+
 # Copy application code
 COPY . /app
-
-# Expose port for dashboard
-EXPOSE 5000
 
 # Default command
 CMD ["python", "automation.py"]
