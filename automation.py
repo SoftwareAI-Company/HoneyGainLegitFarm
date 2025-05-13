@@ -19,6 +19,7 @@ import argparse
 import os
 import sys
 import shutil
+from datetime import datetime
 
 
 from dotenv import load_dotenv
@@ -34,7 +35,9 @@ firebase_db_url = os.getenv("firebase_db_url")
 cred = credentials.Certificate(firebase_json_path)
 appcompany = initialize_app(cred, {
     'databaseURL': firebase_db_url
-},name="appcompany")
+}, name="appcompany")
+# Firebase metrics reference
+metrics_ref = db.reference('metrics', app=appcompany)
 
 
 # -------------------------
@@ -90,6 +93,7 @@ def steam_cycle(cycle_id, install_dir, steamcmd_path, username, password, app_id
         [f"force_install_dir {install_dir}", f"app_update {app_id} validate"]
     )
     logging.info(f"Steam cycle {cycle_id} {'success' if ok else 'failure'}")
+    return ok
 
 # -------------------------
 # yt-dlp Function
@@ -180,14 +184,37 @@ if __name__ == '__main__':
 
         # 3 Steam cycles
         for i in range(1, 4):
-            steam_cycle(i, INSTALL_DIR, STEAMCMD_PATH, USERNAME, PASSWORD, APP_ID)
-            # time.sleep(interval)
+            ok = steam_cycle(i, INSTALL_DIR, STEAMCMD_PATH, USERNAME, PASSWORD, APP_ID)
+            # Record metric for Steam cycle
+            try:
+                metrics_ref.push({
+                    'round': cycle,
+                    'type': 'steam',
+                    'cycle_id': i,
+                    'status': 'success' if ok else 'failure',
+                    'timestamp': datetime.utcnow().isoformat()
+                })
+            except Exception as e:
+                logging.warning(f"Error pushing steam metric: {e}")
+            # time.sleep(INTERVAL)
 
         # 3 yt-dlp cycles
         for idx, url in enumerate(videos[:3], start=1):
             success = yt_cycle(url, YT_OUTPUT)
             logging.info(f"yt cycle {idx} {'success' if success else 'failure'}")
-            # time.sleep(interval)
+            # Record metric for yt-dlp cycle
+            try:
+                metrics_ref.push({
+                    'round': cycle,
+                    'type': 'yt-dlp',
+                    'cycle_id': idx,
+                    'video_url': url,
+                    'status': 'success' if success else 'failure',
+                    'timestamp': datetime.utcnow().isoformat()
+                })
+            except Exception as e:
+                logging.warning(f"Error pushing yt-dlp metric: {e}")
+            # time.sleep(INTERVAL)
 
         logging.info(f"=== Completed round {cycle}; ===")
         # time.sleep(interval)
