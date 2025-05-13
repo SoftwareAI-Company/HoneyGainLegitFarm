@@ -7,8 +7,6 @@ services:
     restart: always
     ports:
       - "5010:5010"
-    env_file:
-      - keys.env 
     command: > 
       sh -c "python app.py"
     mem_limit: 500MB
