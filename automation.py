@@ -35,7 +35,7 @@ firebase_db_url = os.getenv("firebase_db_url")
 cred = credentials.Certificate(firebase_json_path)
 appcompany = initialize_app(cred, {
     'databaseURL': firebase_db_url
-}, name="appcompany")
+}, name="appcompany2")
 # Firebase metrics reference
 metrics_ref = db.reference('metrics', app=appcompany)
 
