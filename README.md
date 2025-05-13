@@ -116,3 +116,30 @@ O script roda em loop infinito, alternando ciclos de download de Steam e YouTube
 
 ---
 Crie seus ciclos de download e transforme seu tráfego em ganhos com o **Legit Farm Honeygain Automation**! 🚀
+
+## Containerização
+
+1. Construa a imagem Docker:
+
+   ```bash
+   docker build -t legit-farm:latest .
+   ```
+
+2. Execute o contêiner:
+
+   ```bash
+   docker run -d \
+     -e STEAM_USERNAME=seuUsuario \
+     -e STEAM_PASSWORD=suaSenha \
+     -e STEAM_APP_ID=480 \
+     -e STEAM_INSTALL_DIR=/steam_apps/480 \
+     -e VIDEO_FILE=yts.txt \
+     -v /caminho/local/steam_apps:/steam_apps \
+     -v /caminho/local/videos.txt:/app/yts.txt \
+     -p 5000:5000 \
+     legit-farm:latest
+   ```
+
+3. Acesse o dashboard:
+
+   http://localhost:5000/

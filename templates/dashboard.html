@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legit Farm Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { margin-bottom: 20px; }
+        .metric { font-size: 1.2em; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Legit Farm Honeygain Dashboard</h1>
+    <div id="metrics">
+        <div class="metric">Rounds executed: <span id="rounds">0</span></div>
+        <div class="metric">Last run: <span id="last_run">N/A</span></div>
+    </div>
+    <script>
+        async function fetchMetrics() {
+            try {
+                const res = await fetch('/api/metrics');
+                const data = await res.json();
+                document.getElementById('rounds').textContent = data.rounds;
+                document.getElementById('last_run').textContent = data.last_run;
+            } catch (e) {
+                console.error('Error fetching metrics', e);
+            }
+        }
+        fetchMetrics();
+        setInterval(fetchMetrics, 5000);
+    </script>
+</body>
+</html>
