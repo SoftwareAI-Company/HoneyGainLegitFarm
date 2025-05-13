@@ -19,9 +19,28 @@ import argparse
 import os
 import sys
 import shutil
+
+
+from dotenv import load_dotenv
+from firebase_admin import credentials, initialize_app, db
+
+dotenv_path = os.path.join(os.path.dirname(__file__), "Keys", "keys.env")
+load_dotenv(dotenv_path=dotenv_path)
+
+firebase_json_path = os.getenv("firebase_json_path")
+firebase_db_url = os.getenv("firebase_db_url")
+
+# --- Initialize Firebase ---
+cred = credentials.Certificate(firebase_json_path)
+appcompany = initialize_app(cred, {
+    'databaseURL': firebase_db_url
+},name="appcompany")
+
+
 # -------------------------
 # Configuration & Logging
 # -------------------------
+
 
 def setup_logging(log_file: str):
     logging.basicConfig(
@@ -56,19 +75,19 @@ def run_steamcmd(steamcmd_path: str, username: str, password: str, commands: lis
         return False
 
 
-def steam_cycle(args, cycle_id):
+def steam_cycle(cycle_id, install_dir, steamcmd_path, username, password, app_id):
     logging.info(f"Steam cycle {cycle_id} start")
     # uninstall
-    if os.path.isdir(args.install_dir):
+    if os.path.isdir(install_dir):
         try:
-            shutil.rmtree(args.install_dir)
+            shutil.rmtree(install_dir)
             logging.info("Uninstalled previous install")
         except Exception as e:
             logging.warning(f"Error uninstalling: {e}")
     # download
     ok = run_steamcmd(
-        args.steamcmd_path, args.username, args.password,
-        [f"force_install_dir {args.install_dir}", f"app_update {args.app_id} validate"]
+        steamcmd_path, username, password,
+        [f"force_install_dir {install_dir}", f"app_update {app_id} validate"]
     )
     logging.info(f"Steam cycle {cycle_id} {'success' if ok else 'failure'}")
 
@@ -134,23 +153,21 @@ def yt_cycle(video_url: str, out_dir: str, timeout: int = 600) -> bool:
 # -------------------------
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Combined SteamCLI & yt-dlp automation')
-    parser.add_argument('--username', required=True, help='Steam username')
-    parser.add_argument('--password', required=True, help='Steam password')
-    parser.add_argument('--app-id', required=True, help='Steam App ID')
-    parser.add_argument('--install-dir', required=True, help='Steam install directory')
-    parser.add_argument('--video-file', required=True, help='Path to text file with one YouTube URL per line')
-    parser.add_argument('--yt-output', default='yt_downloads', help='Directory for yt-dlp downloads')
-    parser.add_argument('--steamcmd-path', default='', help='Path to steamcmd executable')
-    parser.add_argument('--log-file', default='automation.log', help='Log file')
-    # parser.add_argument('--interval', type=int, default=60, help='Seconds to wait between cycles')
-    args = parser.parse_args()
+    USERNAME = os.getenv('STEAM_USERNAME')
+    PASSWORD = os.getenv('STEAM_PASSWORD')
+    APP_ID = os.getenv('STEAM_APP_ID', '480')
+    INSTALL_DIR = os.getenv('STEAM_INSTALL_DIR', '/steam_apps/480')
+    VIDEO_FILE = os.getenv('VIDEO_FILE', 'yts.txt')
+    YT_OUTPUT = os.getenv('YT_OUTPUT', 'yt_downloads')
+    STEAMCMD_PATH = os.getenv('STEAMCMD_PATH', '')
+    INTERVAL = int(os.getenv('CYCLE_INTERVAL', '1800'))
+    LOG_FILE = os.getenv('LOG_FILE', 'automation.log')
 
-    setup_logging(args.log_file)
-    os.makedirs(args.yt_output, exist_ok=True)
+    setup_logging(LOG_FILE)
+    os.makedirs(YT_OUTPUT, exist_ok=True)
 
     # Load video URLs
-    with open(args.video_file) as f:
+    with open(VIDEO_FILE) as f:
         videos = [line.strip() for line in f if line.strip()]
     if not videos:
         logging.error("No videos provided; exiting.")
@@ -161,19 +178,19 @@ if __name__ == '__main__':
         cycle += 1
         logging.info(f"=== Starting combined round {cycle} ===")
 
-        # # 3 Steam cycles
-        # for i in range(1, 4):
-        #     steam_cycle(args, i)
-        #     # time.sleep(args.interval)
+        # 3 Steam cycles
+        for i in range(1, 4):
+            steam_cycle(i, INSTALL_DIR, STEAMCMD_PATH, USERNAME, PASSWORD, APP_ID)
+            # time.sleep(interval)
 
         # 3 yt-dlp cycles
         for idx, url in enumerate(videos[:3], start=1):
-            success = yt_cycle(url, args.yt_output)
+            success = yt_cycle(url, YT_OUTPUT)
             logging.info(f"yt cycle {idx} {'success' if success else 'failure'}")
-            # time.sleep(args.interval)
+            # time.sleep(interval)
 
         logging.info(f"=== Completed round {cycle}; ===")
-        # time.sleep(args.interval)
+        # time.sleep(interval)
 
 
 # -----------------------------------------
