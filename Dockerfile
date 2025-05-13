@@ -29,4 +29,4 @@ COPY . /app
 EXPOSE 5000
 
 # Default command
-CMD ["python", "app.py"]
+CMD ["python", "automation.py"]
