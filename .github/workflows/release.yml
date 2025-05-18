@@ -1,132 +1,128 @@
-cat > .github/workflows/release.yml << 'EOF'
-name: 📦 Build & Release Electron App
+name: "Build & Release Electron App"
 
 on:
   pull_request:
-    types: [closed]
     branches:
       - main
+    types:
+      - closed
 
 env:
   NODE_VERSION: '18.x'
 
 jobs:
   build-frontend:
-    name: 🔨 Build Frontend (Vite + React)
+    name: "🔨 Build Frontend (Vite + React)"
     runs-on: ubuntu-latest
     if: github.event.pull_request.merged == true
     outputs:
       dist-path: ${{ steps.build.outputs.dist-path }}
     steps:
-      - name: 📥 Checkout code
+      - name: "Checkout code"
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: 🛠 Setup Node.js
+      - name: "Setup Node.js"
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: 📦 Install dependencies
+      - name: "Install dependencies"
         run: npm ci
 
-      - name: 🏗️ Build Vite
+      - name: "Build Vite"
         id: build
         run: |
           npm run build
-          echo "::set-output name=dist-path::$(pwd)/dist"
+          echo "dist-path=$(pwd)/dist" >> $GITHUB_OUTPUT
 
-      - name: 📤 Upload dist as artifact
+      - name: "Upload dist as artifact"
         uses: actions/upload-artifact@v3
         with:
           name: vite-dist
           path: ${{ steps.build.outputs.dist-path }}
 
-
   build-electron:
-    name: ⚡ Build Electron App
+    name: "⚡ Build Electron App"
     runs-on: ubuntu-latest
     needs: build-frontend
     outputs:
-      electron-artifact: ${{ steps.build.outputs.app-path }}
+      app-path: ${{ steps.build.outputs.app-path }}
     steps:
-      - name: 📥 Download frontend build
+      - name: "Download frontend build"
         uses: actions/download-artifact@v3
         with:
           name: vite-dist
           path: ./dist
 
-      - name: 📥 Checkout code
+      - name: "Checkout code"
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: 🛠 Setup Node.js
+      - name: "Setup Node.js"
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: 📰 Copy frontend build to Electron assets
+      - name: "Copy frontend build to Electron"
         run: |
           mkdir -p public
           cp -r dist/* public/
 
-      - name: 🏗️ Build Electron App (via electron-builder)
+      - name: "Build Electron App"
         id: build
         run: |
           npx electron-builder --linux --mac --win --publish never
-          echo "::set-output name=app-path::$(pwd)/dist_electron/*.AppImage"
+          echo "app-path=$(pwd)/dist_electron/*.AppImage" >> $GITHUB_OUTPUT
 
-      - name: 📤 Upload Electron App as artifact
+      - name: "Upload Electron App as artifact"
         uses: actions/upload-artifact@v3
         with:
           name: electron-app
           path: ${{ steps.build.outputs.app-path }}
 
-
   release:
-    name: 🚀 Create GitHub Release
+    name: "🚀 Create GitHub Release"
     runs-on: ubuntu-latest
     needs: build-electron
     steps:
-      - name: 📥 Checkout code (to read package.json)
+      - name: "Checkout code (to read package.json)"
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
 
-      - name: 🛠 Setup Node.js
+      - name: "Setup Node.js"
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: 🔖 Get version from package.json
+      - name: "Get version from package.json"
         id: get_version
         run: |
-          version=$(node -p "require('./package.json').version")
-          echo "version=$version" >> $GITHUB_OUTPUT
+          echo "version=$(node -p \"require('./package.json').version\")" >> $GITHUB_OUTPUT
 
-      - name: 📦 Download Electron artifact
+      - name: "Download Electron artifact"
         uses: actions/download-artifact@v3
         with:
           name: electron-app
           path: ./release-assets
 
-      - name: ✨ Create GitHub Release
+      - name: "Create GitHub Release"
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: v${{ steps.get_version.outputs.version }}
-          name: Release v${{ steps.get_version.outputs.version }}
+          name: "Release v${{ steps.get_version.outputs.version }}"
           draft: false
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: 📤 Upload Release Asset(s)
+      - name: "Upload Release Assets"
         uses: softprops/action-gh-release@v1
         with:
           files: ./release-assets/**
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-EOF
