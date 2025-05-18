@@ -6,7 +6,7 @@ on:
       - main
     types:
       - closed
-
+ 
 env:
   NODE_VERSION: '18.x'
 
