@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "main": "electron/main.cjs",
   "scripts": {
     "dev": "concurrently \"npm run vite\" \"npm run electron\"",
     "vite": "vite --port 8080",
@@ -13,7 +14,14 @@
     "preview": "vite preview"
   },
   "build": {
-    "electronVersion": "25.3.1"
+    "appId": "com.honeygainlegitfarm.app",
+    "electronVersion": "25.3.1",
+    "files": [
+      "electron/**/*",
+      "public/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ]
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",

@@ -66,7 +66,7 @@ jobs:
           mkdir -p public
           cp -r dist/* public/
       - name: Build Electron App
-        run: npx electron-builder --linux --win --publish never
+        run: npx electron-builder --win --publish never
       - uses: actions/upload-artifact@v4
         with:
           name: electron-app
