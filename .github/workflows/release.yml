@@ -41,12 +41,13 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: vite-dist
-          path: ${{ steps.build.outputs.dist-path }}
+          path: dist
   
   build-electron:
     name: "⚡ Build Electron App"
     runs-on: ubuntu-latest
     needs: build-frontend
+    if: github.event.pull_request.merged == true
     outputs:
       app-path: ${{ steps.build.outputs.app-path }}
     steps:
@@ -81,11 +82,12 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: electron-app
-          path: ${{ steps.build.outputs.app-path }}
+          path: dist
 
   release:
     name: "🚀 Create GitHub Release"
     runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
     needs: build-electron
     steps:
       - name: "Checkout code (to read package.json)"
