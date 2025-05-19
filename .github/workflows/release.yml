@@ -65,12 +65,12 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: vite-dist
-          path: ./dist
+          path: .
 
       - name: "Copy frontend build to Electron"
         run: |
           mkdir -p public
-          cp -r dist/vite-dist/* public/
+          cp -r dist/* public/
 
 
       - name: "Build Electron App"
