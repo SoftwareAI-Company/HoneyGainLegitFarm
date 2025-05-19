@@ -71,7 +71,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: electron-app
-          path: dist_electron/*.AppImage
+          path: dist/*.exe    # ◀️ captura o instalador Windows
 
   release:
     name: "🚀 Create GitHub Release"
@@ -94,7 +94,7 @@ jobs:
         run: |
           version=$(node -p "require('./package.json').version")
           echo "version=$version" >> $GITHUB_OUTPUT
-          
+
       - name: "Download Electron artifact"
         uses: actions/download-artifact@v4
         with:
