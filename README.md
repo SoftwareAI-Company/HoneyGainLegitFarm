@@ -1,30 +1,49 @@
 
-# HoneyGainLegitFarm
-=======
-# Legit Farm for Honeygain Automation
+<h1 align="center">HoneyGainLegitFarm</h1>
 
-Automatize downloads legítimos de Steam e vídeos do YouTube para gerar tráfego de dados contínuo e maximizar seus ganhos no Honeygain.
+![Screenshot_29](Screenshots/Screenshot_29.png)
 
-## Índice
+<p align="center">
+Automatize downloads legítimos de Steam e vídeos do YouTube para gerar tráfego de dados contínuo e maximizar seus ganhos no Honeygain</p>
 
+<p align="center"><code>docker pull mediacutstudio/honeygainclaimpotautomation</code></p>
+<p align="center"><code>docker pull mediacutstudio/ytdownloadautomation</code></p>
+
+
+<details>
+<summary><strong>Table of contents</strong></summary>
+
+<!-- Begin ToC -->
 - [Descrição](#descrição)
 - [Pré-requisitos](#pré-requisitos)
 - [Instalação](#instalação)
 - [Configuração](#configuração)
 - [Uso](#uso)
-- [Argumentos](#argumentos)
-- [Exemplos](#exemplos)
-- [Demonstração de Potencial](#demonstração-de-potencial)
+- [Demonstrativo de Métricas](#demonstrativo-de-métricas)
 - [Boas práticas](#boas-práticas)
+- [Containerização](#containerização)
 - [Contribuindo](#contribuindo)
+<!-- End ToC -->
 
-## Descrição
+</details>
 
+# 
 O **Legit Farm** é uma automação que gera tráfego de dados verdadeiro através de ciclos de download:
 - Uso de `steamcmd` para instalar/atualizar jogos gratuitos (ex.: App ID `480`).
 - Uso de `yt-dlp` para baixar vídeos do YouTube.
 
 Esse tráfego legítimo é consumido pelo aplicativo Honeygain, aumentando de forma contínua seus créditos sem violar os termos de uso.
+
+## Demonstrativo de Métricas
+
+| Ciclo | Tráfego Steam | Vídeos YouTube | Total (GB) | Ganho Estimado |
+|-------|---------------|----------------|------------|----------------|
+| 1     | ~5 GB         | ~1 GB          | ~6 GB      | ~0,12 USD      |
+| 2     | ~5 GB         | ~1 GB          | ~6 GB      | ~0,12 USD      |
+| 3     | ~5 GB         | ~1 GB          | ~6 GB      | ~0,12 USD      |
+|**Total Diário**|           |                | **~18 GB** | **~0,36 USD**  |
+
+> Esses valores são aproximados e variam conforme a qualidade do vídeo e atualizações do Steam. Ajuste o número de ciclos para aumentar seu rendimento.
 
 ## Pré-requisitos
 
@@ -54,32 +73,40 @@ Esse tráfego legítimo é consumido pelo aplicativo Honeygain, aumentando de fo
 
 ## Configuração
 
-1. Prepare suas credenciais Steam:
-   - Informe `--username` e `--password` ao executar o script.
-2. Crie um arquivo de texto com URLs do YouTube (um por linha), ex.: `videos.txt`.
-3. Opcionalmente, ajuste os parâmetros de ciclo (intervalos, número de vídeos, App ID, etc.) diretamente nos argumentos.
+- Baixe ou posicione seu arquivo de credenciais do Firebase (serviceAccountKey JSON) em `Keys/firebase.json`.
+- Crie ou atualize `Keys/keys.env` com as variáveis abaixo:
+
+  ```ini
+  STEAM_USERNAME=seu_usuario_steam
+  STEAM_PASSWORD=sua_senha_steam
+  STEAM_APP_ID=480
+  STEAM_INSTALL_DIR=/caminho/para/steam_apps/480
+  STEAMCMD_PATH=/caminho/para/steamcmd
+  VIDEO_FILE=yts.txt
+  YT_OUTPUT=yt_downloads
+  CYCLE_INTERVAL=1800
+  LOG_FILE=automation.log
+  firebase_json_path=./Keys/firebase.json
+  firebase_db_url=https://SEU_PROJETO.firebaseio.com
+  ```
 
 ## Uso
 
+Configure suas credenciais e parâmetros em `Keys/keys.env`, depois execute:
+
 ```bash
-python automation.py \
-  --username SEU_USUARIO_STEAM \
-  --password SUA_SENHA_STEAM \
-  --app-id 480 \
-  --install-dir /caminho/para/steam_apps/480 \
-  --video-file videos.txt \
-  --yt-output ./yt_downloads \
-  --steamcmd-path /caminho/para/steamcmd \
-  --log-file automation.log
+python automation.py
 ```
 
-Exemplo simplificado (Windows):
+O script roda ciclos de download de Steam e YouTube continuamente até ser interrompido (Ctrl+C).
 
-```powershell
-python automation.py --username meuUsuario --password minhaSenha --app-id 480 --install-dir C:\SteamApps\480 --video-file yts.txt
+Para visualizar métricas em tempo real, inicie o dashboard:
+
+```bash
+python app.py
 ```
 
-O script roda em loop infinito, alternando ciclos de download de Steam e YouTube. Pressione `Ctrl+C` para interromper.
+Abra no navegador: http://localhost:5010
 
 ### Argumentos
 
@@ -92,20 +119,10 @@ O script roda em loop infinito, alternando ciclos de download de Steam e YouTube
 - `--steamcmd-path`: Caminho para o executável `steamcmd` (remova se estiver no PATH)
 - `--log-file`: Arquivo de log (padrão: `automation.log`)
 
-## Demonstração de Potencial
-
-| Ciclo | Tráfego Steam | Vídeos YouTube | Total (GB) | Ganho Estimado |
-|-------|---------------|----------------|------------|----------------|
-| 1     | ~5 GB         | ~1 GB          | ~6 GB      | ~0,12 USD      |
-| 2     | ~5 GB         | ~1 GB          | ~6 GB      | ~0,12 USD      |
-| 3     | ~5 GB         | ~1 GB          | ~6 GB      | ~0,12 USD      |
-|**Total Diário**|           |                | **~18 GB** | **~0,36 USD**  |
-
-> Esses valores são aproximados e variam conforme a qualidade do vídeo e atualizações do Steam. Ajuste o número de ciclos para aumentar seu rendimento.
-
 ## Boas práticas
 
-- Monitore sua conexão: evite saturar sua banda em horários de pico.
+
+
 - Utilize SSD para reduzir tempo de instalação/remoção.
 - Mantenha o Honeygain rodando em background e verifique regularmente seu painel de controle.
 
@@ -118,31 +135,30 @@ O script roda em loop infinito, alternando ciclos de download de Steam e YouTube
 5. Abra um Pull Request
 
 ---
-Crie seus ciclos de download e transforme seu tráfego em ganhos com o **Legit Farm Honeygain Automation**! 🚀
+
 
 ## Containerização
+- Verificar detalhes da imagem
+Docker Hub: Acesse:
+https://hub.docker.com/r/mediacutstudio/honeygainclaimpotautomation
+https://hub.docker.com/r/mediacutstudio/ytdownloadautomation
 
 1. Construa a imagem Docker:
 
    ```bash
-   docker build -t legit-farm:latest .
+   docker build -t mediacutstudio/ytdownloadautomation:latest .
    ```
 
 2. Execute o contêiner:
 
    ```bash
-   docker run -d \
-     -e STEAM_USERNAME=seuUsuario \
-     -e STEAM_PASSWORD=suaSenha \
-     -e STEAM_APP_ID=480 \
-     -e STEAM_INSTALL_DIR=/steam_apps/480 \
-     -e VIDEO_FILE=yts.txt \
-     -v /caminho/local/steam_apps:/steam_apps \
-     -v /caminho/local/videos.txt:/app/yts.txt \
-     -p 5000:5000 \
-     legit-farm:latest
+   docker run -d 
    ```
 
-3. Acesse o dashboard:
+3. Pronto o algoritimo do download de videos do youtube :
 
-   http://localhost:5000/
+   ```bash
+2025-05-19 17:46:13,169 - INFO - === yt cycle round 1 ===
+2025-05-19 17:46:13,174 - INFO - Uninstalled previous install
+2025-05-19 17:46:13,176 - INFO - Running: yt-dlp -o yt_downloads/%(title)s.%(ext)s https://www.youtube.com/watch?v=hxdSr03ULdM⁠
+   ```
