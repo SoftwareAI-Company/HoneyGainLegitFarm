@@ -1,0 +1,8 @@
+
+services:
+  honeyfarm_app:
+    build: .
+    command: >
+      sh -c "python automation.py"
+ 
+
