@@ -1,7 +1,5 @@
-
+ 
 <h1 align="center">HoneyGainLegitFarm</h1>
-
-![Screenshot_29](Screenshots/Screenshot_29.png)
 
 <p align="center">
 Automatize downloads legítimos de Steam e vídeos do YouTube para gerar tráfego de dados contínuo e maximizar seus ganhos no Honeygain</p>
