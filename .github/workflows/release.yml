@@ -6,7 +6,8 @@ on:
       - main
     types:
       - closed
- 
+
+
 env:
   NODE_VERSION: '22.x'
 
@@ -76,8 +77,10 @@ jobs:
   release:
     name: "🚀 Create GitHub Release"
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true
     needs: build-electron
+    if: github.event.pull_request.merged == true
+    permissions:
+      contents: write 
     steps:
       - name: "Checkout code (to read package.json)"
         uses: actions/checkout@v4
@@ -109,12 +112,10 @@ jobs:
           name: "Release v${{ steps.get_version.outputs.version }}"
           draft: false
           prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: "Upload Release Assets"
         uses: softprops/action-gh-release@v1
         with:
           files: ./release-assets/**
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
