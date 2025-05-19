@@ -44,26 +44,27 @@ jobs:
           path: dist
 
   build-electron:
-    needs: build-frontend
+    name: "⚡ Build Electron App"
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true
+    needs: build-frontend
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
+      - name: Install Electron
+        run: npm install --save-dev electron@latest
       - name: Download frontend build
         uses: actions/download-artifact@v4
         with:
           name: vite-dist
-          path: dist     # ← this recreates the dist/ folder
-      - name: Copy frontend build to Electron
+          path: dist
+      - name: Copy frontend to Electron
         run: |
           mkdir -p public
           cp -r dist/* public/
       - name: Build Electron App
-        run: |
-          npx electron-builder --linux --mac --win --publish never
+        run: npx electron-builder --linux --mac --win --publish never
       - uses: actions/upload-artifact@v4
         with:
           name: electron-app
