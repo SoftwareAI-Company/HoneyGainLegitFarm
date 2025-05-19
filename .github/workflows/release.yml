@@ -41,7 +41,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: vite-dist
-          path: dist/
+          path: dist
 
   build-electron:
     name: "⚡ Build Electron App"
@@ -70,7 +70,7 @@ jobs:
       - name: "Copy frontend build to Electron"
         run: |
           mkdir -p public
-          cp -r dist/* public/
+          cp -r dist/dist/* public/
 
 
       - name: "Build Electron App"
