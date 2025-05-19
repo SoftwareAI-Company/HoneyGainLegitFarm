@@ -38,7 +38,7 @@ jobs:
           echo "dist-path=$(pwd)/dist" >> $GITHUB_OUTPUT
 
       - name: "Upload dist as artifact"
-        uses: ./.github/actions/upload-artifact
+        uses: actions/upload-artifact@v4
         with:
           name: vite-dist
           path: ${{ steps.build.outputs.dist-path }}
@@ -51,7 +51,7 @@ jobs:
       app-path: ${{ steps.build.outputs.app-path }}
     steps:
       - name: "Download frontend build"
-        uses: ./.github/actions/download-artifact
+        uses: actions/download-artifact@v4
         with:
           name: vite-dist
           path: ./dist
@@ -78,7 +78,7 @@ jobs:
           echo "app-path=$(pwd)/dist_electron/*.AppImage" >> $GITHUB_OUTPUT
 
       - name: "Upload Electron App as artifact"
-        uses: ./.github/actions/upload-artifact
+        uses: actions/upload-artifact@v4
         with:
           name: electron-app
           path: ${{ steps.build.outputs.app-path }}
@@ -104,28 +104,25 @@ jobs:
           echo "version=$(node -p \"require('./package.json').version\")" >> $GITHUB_OUTPUT
 
       - name: "Download Electron artifact"
-        uses: ./.github/actions/download-artifact
+        uses: actions/download-artifact@v4
         with:
           name: electron-app
           path: ./release-assets
 
       - name: "Create GitHub Release"
         id: create_release
-        uses: actions/create-release@v1
+        uses: softprops/action-gh-release@v1
         with:
           tag_name: v${{ steps.get_version.outputs.version }}
-          release_name: "Release v${{ steps.get_version.outputs.version }}"
+          name: "Release v${{ steps.get_version.outputs.version }}"
           draft: false
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: "Upload Release Asset"
-        uses: actions/upload-release-asset@v1
+      - name: "Upload Release Assets"
+        uses: softprops/action-gh-release@v1
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: "./release-assets/*.AppImage"
-          asset_name: "electron-app-${{ steps.get_version.outputs.version }}.AppImage"
-          asset_content_type: application/octet-stream
+          files: ./release-assets/**
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
