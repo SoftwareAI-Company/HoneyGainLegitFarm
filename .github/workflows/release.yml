@@ -45,7 +45,7 @@ jobs:
 
   build-electron:
     name: "⚡ Build Electron App"
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     needs: build-frontend
     steps:
       - uses: actions/checkout@v4
