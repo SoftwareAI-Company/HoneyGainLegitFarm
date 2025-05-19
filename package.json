@@ -12,6 +12,9 @@
     "lint": "eslint .",
     "preview": "vite preview"
   },
+  "build": {
+    "electronVersion": "25.3.1"
+  },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
     "@radix-ui/react-accordion": "^1.2.0",
