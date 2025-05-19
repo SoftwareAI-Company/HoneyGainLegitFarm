@@ -70,7 +70,7 @@ jobs:
       - name: "Copy frontend build to Electron"
         run: |
           mkdir -p public
-          cp -r dist/dist/* public/
+          cp -r dist/vite-dist/* public/
 
 
       - name: "Build Electron App"
