@@ -4,7 +4,7 @@ from time import sleep
 import os
 from dotenv import load_dotenv
 from firebase_admin import credentials, initialize_app, db
-
+# test
 dotenv_path = os.path.join(os.path.dirname(__file__), '../', "Keys", "keys.env")
 load_dotenv(dotenv_path=dotenv_path)
 
