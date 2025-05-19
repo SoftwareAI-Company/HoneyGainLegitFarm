@@ -111,18 +111,21 @@ jobs:
 
       - name: "Create GitHub Release"
         id: create_release
-        uses: softprops/action-gh-release@v1
+        uses: actions/create-release@v1
         with:
           tag_name: v${{ steps.get_version.outputs.version }}
-          name: "Release v${{ steps.get_version.outputs.version }}"
+          release_name: "Release v${{ steps.get_version.outputs.version }}"
           draft: false
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: "Upload Release Assets"
-        uses: softprops/action-gh-release@v1
+      - name: "Upload Release Asset"
+        uses: actions/upload-release-asset@v1
         with:
-          files: ./release-assets/**
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: "./release-assets/*.AppImage"
+          asset_name: "electron-app-${{ steps.get_version.outputs.version }}.AppImage"
+          asset_content_type: application/octet-stream
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
