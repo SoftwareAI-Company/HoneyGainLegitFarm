@@ -62,6 +62,7 @@ jobs:
           name: vite-dist
           path: dist
       - name: Copy frontend to Electron
+        shell: bash           # ⬅️ use Bash em vez de pwsh
         run: |
           mkdir -p public
           cp -r dist/* public/
