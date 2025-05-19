@@ -41,7 +41,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: vite-dist
-          path: dist/*
+          path: dist/
 
   build-electron:
     name: "⚡ Build Electron App"
