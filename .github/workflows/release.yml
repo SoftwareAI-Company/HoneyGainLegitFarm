@@ -56,8 +56,6 @@ jobs:
         run: npm install
       - name: Install Electron
         run: npm install --save-dev electron@latest
-      - name: Install dmg-license
-        run: npm install --save-dev dmg-license
       - name: Download frontend build
         uses: actions/download-artifact@v4
         with:
