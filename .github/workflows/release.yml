@@ -42,7 +42,7 @@ jobs:
         with:
           name: vite-dist
           path: dist
-  
+
   build-electron:
     name: "⚡ Build Electron App"
     runs-on: ubuntu-latest
