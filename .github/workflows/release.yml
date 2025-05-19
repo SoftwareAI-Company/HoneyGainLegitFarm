@@ -38,7 +38,7 @@ jobs:
           echo "dist-path=$(pwd)/dist" >> $GITHUB_OUTPUT
 
       - name: "Upload dist as artifact"
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2
         with:
           name: vite-dist
           path: ${{ steps.build.outputs.dist-path }}
@@ -51,7 +51,7 @@ jobs:
       app-path: ${{ steps.build.outputs.app-path }}
     steps:
       - name: "Download frontend build"
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v2
         with:
           name: vite-dist
           path: ./dist
@@ -78,7 +78,7 @@ jobs:
           echo "app-path=$(pwd)/dist_electron/*.AppImage" >> $GITHUB_OUTPUT
 
       - name: "Upload Electron App as artifact"
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2
         with:
           name: electron-app
           path: ${{ steps.build.outputs.app-path }}
@@ -104,7 +104,7 @@ jobs:
           echo "version=$(node -p \"require('./package.json').version\")" >> $GITHUB_OUTPUT
 
       - name: "Download Electron artifact"
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v2
         with:
           name: electron-app
           path: ./release-assets
