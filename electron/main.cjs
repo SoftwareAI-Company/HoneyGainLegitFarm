@@ -12,17 +12,26 @@ const docker = new Docker({
 
 function createWindow() {
   const win = new BrowserWindow({
-    width: 434,
-    height: 801,
+    width: 381,
+    height: 725,
+    frame: true,             // remove a barra padrão do sistema
+    autoHideMenuBar: true,    
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),  // 🔥 deve existir e apontar pro seu preload.js
+      preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
       contextIsolation: true,
     },
   });
 
-  win.loadURL('http://localhost:8080');
-  win.webContents.openDevTools({ mode: 'detach' });
+  const fileArgIndex = process.argv.indexOf('--file');
+  if (fileArgIndex !== -1 && process.argv[fileArgIndex + 1]) {
+    const htmlPath = path.resolve(process.cwd(), process.argv[fileArgIndex + 1]);
+    win.loadFile(htmlPath);
+  } else {
+    win.loadURL('http://localhost:8080');
+  }
+
+  // win.webContents.openDevTools({ mode: 'detach' });
 }
 
 // ① Handler para pull da imagem
