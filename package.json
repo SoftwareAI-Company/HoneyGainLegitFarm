@@ -2,7 +2,7 @@
   "name": "vite_react_shadcn_ts",
   "productName": "HoneyGain Legit Farm",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "main": "electron/main.cjs",
   "scripts": {
@@ -17,7 +17,7 @@
     "artifactName": "${productName}-Setup-${version}.${ext}",
     "files": [
       "electron/**/*",
-      "public/**/*",
+      "dist/**/*", 
       "node_modules/**/*",
       "package.json"
     ],

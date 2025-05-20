@@ -23,15 +23,25 @@ function createWindow() {
     },
   });
 
-  const fileArgIndex = process.argv.indexOf('--file');
-  if (fileArgIndex !== -1 && process.argv[fileArgIndex + 1]) {
-    const htmlPath = path.resolve(process.cwd(), process.argv[fileArgIndex + 1]);
-    win.loadFile(htmlPath);
+  if (app.isPackaged) {
+    // Em modo produção (exe)
+    // resourcesPath → aponta para <install-dir>/resources/app/
+    const indexPath = path.join(
+      process.resourcesPath,
+      'app',
+      'dist',
+      'index.html'
+    );
+    win.loadFile(indexPath);
   } else {
-    win.loadURL('http://localhost:8080');
+    // Em modo desenvolvimento (npm run dev usa --file)
+    const fileArgIndex = process.argv.indexOf('--file');
+    if (fileArgIndex !== -1 && process.argv[fileArgIndex + 1]) {
+      win.loadFile(path.resolve(process.cwd(), process.argv[fileArgIndex + 1]));
+    } else {
+      win.loadURL('http://localhost:8080');
+    }
   }
-
-  // win.webContents.openDevTools({ mode: 'detach' });
 }
 
 // ① Handler para pull da imagem
