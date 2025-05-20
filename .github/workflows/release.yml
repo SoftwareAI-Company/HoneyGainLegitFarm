@@ -104,6 +104,15 @@ jobs:
           name: electron-app
           path: ./release-assets
 
+      - name: Delete existing release (if any)
+        run: |
+          version=v${{ steps.get_version.outputs.version }}
+          gh release delete "$version" --yes || true
+          git push --delete origin "$version" || true
+          
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Create GitHub Release and Upload Assets
         id: create_release
         uses: softprops/action-gh-release@v1
