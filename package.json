@@ -17,7 +17,7 @@
     "artifactName": "${productName}-Setup-${version}.${ext}",
     "files": [
       "electron/**/*",
-      "public/**/*",
+      "dist/**/*", 
       "node_modules/**/*",
       "package.json"
     ],
