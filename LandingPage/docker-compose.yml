@@ -1,14 +1,16 @@
 
 services:
   honeygain_landingpage:
-    build: .
+    build:
+      context: .
     volumes:
-      - .:/app  
-    restart: always
+      - .:/app
+    working_dir: /app
     ports:
-      - "5420:5420"
+      - "5173:5173"
     command: >
-      sh -c "python app.py"
-    mem_limit: 500MB
-    cpus: "1.25"   
+      sh -c "npm run dev -- --host"
+    mem_limit: 1524MB
+    cpus: "2.25"   
+
 

@@ -1,10 +1,10 @@
 
 import { ArrowRight, Download, Monitor, Youtube, Gift } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import { Button } from "../components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import HoneygainLogo from "@/components/HoneygainLogo";
-import { Separator } from "@/components/ui/separator";
+import HoneygainLogo from "../components/HoneygainLogo";
+import { Separator } from "../components/ui/separator";
 import { FaWindows, FaPlay  } from "react-icons/fa";
 
 const Index = () => {
@@ -22,23 +22,19 @@ const Index = () => {
             designed exclusively for Windows users
           </p>
           <div className="flex flex-col sm:flex-row gap-2 justify-center">
-            <Button variant="ghost" size="lg" asChild>
-              <Link to="/dashboard">
-                Get Started <FaPlay className="ml-2" />
-              </Link>
-            </Button>
-
             <Button
               variant="ghost"
               size="lg"
               className="text-white hover:bg-white/15"
+              asChild
             >
-              <FaWindows className="mr-2" /> Windows Only
+              <Link to="https://github.com/SoftwareAI-Company/HoneyGainLegitFarm/releases/latest">
+                <FaWindows className="mr-2" /> Download Now
+              </Link>
             </Button>
-
           </div>
         </div>
-      </header>
+      </header> 
 
       {/* Features Section */}
       <section className="py-12 px-4 bg-honeygain-card">

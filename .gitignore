@@ -29,7 +29,7 @@ automation.log
 yts.txt
 yt_downloads/
 templates/
-
+dist/
 
 *node_modules
 *dist
