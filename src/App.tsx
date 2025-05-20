@@ -1,10 +1,10 @@
-
+// src\App.tsx
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HashRouter, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
@@ -44,18 +44,24 @@ const App = () => {
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
+      <HashRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
+          {/* Rota pai única */}
           <Route path="/" element={<Layout />}>
+            {/* Página inicial como rota index */}
+            <Route index element={<Index />} />
+
+            {/* Demais páginas como filhos */}
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="automations" element={<Automations />} />
             <Route path="settings" element={<Settings />} />
-            <Route path="/metrics" element={<Metrics />} />   
+            <Route path="metrics" element={<Metrics />} />
+
+            {/* Qualquer outra URL cai no NotFound */}
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
-      </BrowserRouter>
+      </HashRouter>
     </TooltipProvider>
     {process.env.NODE_ENV === 'development' && <ReactQueryDevtools />}
   </QueryClientProvider>

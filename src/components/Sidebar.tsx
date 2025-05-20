@@ -48,7 +48,7 @@ const Sidebar = ({ collapsed, setCollapsed }: SidebarProps) => {
       <SidebarContent>
         <SidebarMenu>
           {[
-            { to: "/",        icon: <LayoutDashboard />, label: "Dashboard" },
+            { to: "/dashboard",        icon: <LayoutDashboard />, label: "Dashboard" },
             { to: "/automations", icon: <Zap />,          label: "Automations" },
             { to: "/metrics",  icon: <BarChart />,        label: "Metrics" },
             { to: "/settings", icon: <Settings />,        label: "Settings" },

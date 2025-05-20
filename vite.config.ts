@@ -5,11 +5,11 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 
 export default defineConfig(({ mode }) => ({
+  base: './',                  // use caminhos relativos para assets no dist
   server: {
     host: "::",
     port: 8080,
     proxy: {
-      // tudo que bater em /api vai para o seu backend em http://localhost:5000
       '/api': {
         target: 'http://localhost:5000',
         changeOrigin: true,
@@ -25,5 +25,10 @@ export default defineConfig(({ mode }) => ({
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
+  },
+  build: {
+    outDir: 'dist',            // diretório de saída default
+    assetsDir: 'assets',       // pasta para css/js
+    sourcemap: mode === 'development',
   },
 }));
