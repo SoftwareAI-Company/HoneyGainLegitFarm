@@ -40,7 +40,6 @@ const Sidebar = ({ collapsed, setCollapsed }: SidebarProps) => {
               collapsed ? "opacity-0" : "opacity-100"
             )}
           >
-            HoneyAuto
           </span>
         </div>
 

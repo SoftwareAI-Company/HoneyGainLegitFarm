@@ -5,7 +5,6 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 
 export default defineConfig(({ mode }) => ({
-  base: './',                  // use caminhos relativos para assets no dist
   server: {
     host: "::",
     port: 8080,
@@ -31,4 +30,5 @@ export default defineConfig(({ mode }) => ({
     assetsDir: 'assets',       // pasta para css/js
     sourcemap: mode === 'development',
   },
+  base: '',  // sem './'
 }));
