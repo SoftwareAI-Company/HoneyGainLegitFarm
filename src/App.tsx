@@ -49,10 +49,10 @@ const App = () => {
           {/* Rota pai única */}
           <Route path="/" element={<Layout />}>
             {/* Página inicial como rota index */}
-            <Route index element={<Index />} />
+            {/* <Route element={<Index />} /> */}
 
-            {/* Demais páginas como filhos */}
-            <Route path="dashboard" element={<Dashboard />} />
+            {/* Demais páginas */}
+            <Route index path="dashboard" element={<Dashboard />} />
             <Route path="automations" element={<Automations />} />
             <Route path="settings" element={<Settings />} />
             <Route path="metrics" element={<Metrics />} />

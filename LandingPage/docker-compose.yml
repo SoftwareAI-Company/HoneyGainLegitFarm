@@ -1,0 +1,14 @@
+
+services:
+  honeygain_landingpage:
+    build: .
+    volumes:
+      - .:/app  
+    restart: always
+    ports:
+      - "5420:5420"
+    command: >
+      sh -c "python app.py"
+    mem_limit: 500MB
+    cpus: "1.25"   
+

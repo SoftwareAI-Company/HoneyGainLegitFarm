@@ -63,10 +63,11 @@ export function DockerManager({ context }: DockerManagerProps) {
       setPulling(false);
     }
   };
-
+  
   const spinUp = async () => {
     setLoading(true);
     try {
+      // const memLimit = '500m';
       const email = localStorage.getItem('honeygain_email') || '';
       const pass = localStorage.getItem('honeygain_pass') || '';
       const envVars = [`HONEYGAIN_EMAIL=${email}`, `HONEYGAIN_PASS=${pass}`];
@@ -76,17 +77,16 @@ export function DockerManager({ context }: DockerManagerProps) {
         await (window as any).dockerAPI.createContainer({
           imageTag,
           name,
-          memLimit: 500 * 1024 * 1024,
+          memLimit: '500m',
           cpus: 1.25,
-          binds: [`${hostPath}/Keys:/app/Keys`],
           envVars,
         });
       }
       toast({ title: 'Containers Created', description: `${count} containers started`, variant: 'default' });
       await refresh();
-    } catch (err) {
-      console.error('Error creating containers:', err);
-      toast({ title: 'Error', description: 'Failed to create containers.', variant: 'destructive' });
+    } catch (err: any) {
+      console.error('Error creating containers:', err, err.message);
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
     } finally {
       setLoading(false);
     }

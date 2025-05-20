@@ -3,6 +3,7 @@ const path = require('path');
 const { app, BrowserWindow, ipcMain } = require('electron');
 const Docker = require('dockerode');
 const { spawn } = require('child_process');
+const { protocol } = require('electron');
 
 const docker = new Docker({
   socketPath: process.platform === 'win32'
@@ -12,7 +13,7 @@ const docker = new Docker({
 
 function createWindow() {
   const win = new BrowserWindow({
-    width: 381,
+    width: 421,
     height: 725,
     frame: true,             // remove a barra padrão do sistema
     autoHideMenuBar: true,    
@@ -25,14 +26,14 @@ function createWindow() {
 
   if (app.isPackaged) {
     // Em modo produção (exe)
-    // resourcesPath → aponta para <install-dir>/resources/app/
     const indexPath = path.join(
       process.resourcesPath,
-      'app',
+      'app.asar',       // ou 'app' se o builder gerar unpacked
       'dist',
       'index.html'
     );
-    win.loadFile(indexPath);
+    console.log('[main] loading index:', indexPath);
+    win.loadURL(`file://${indexPath}`);
   } else {
     // Em modo desenvolvimento (npm run dev usa --file)
     const fileArgIndex = process.argv.indexOf('--file');
@@ -42,6 +43,11 @@ function createWindow() {
       win.loadURL('http://localhost:8080');
     }
   }
+win.webContents.once('did-fail-load', (_event, errorCode, errorDesc) => {
+  console.error('[did-fail-load]', errorCode, errorDesc);
+  win.webContents.openDevTools();
+});
+win.webContents.openDevTools(); // ainda abre sempre
 }
 
 // ① Handler para pull da imagem
@@ -71,48 +77,39 @@ ipcMain.handle('docker:list-containers', async () => {
 
 ipcMain.handle('docker:create-container', async (_, opts) => {
   return new Promise((resolve, reject) => {
-    // Base do comando docker run
-    const baseArgs = [
+    // argumentos de run: sem shell, sem cmd extra
+    const args = [
       'run', '-d',
       '--name', opts.name,
-      '-m', opts.memLimit.toString(),
+      '--memory', opts.memLimit,
       '--cpus', opts.cpus.toString(),
+      // envs
+      ...(Array.isArray(opts.envVars)
+        ? opts.envVars.flatMap(v => ['-e', v])
+        : []),
+      // só a imagem: o ENTRYPOINT/CMD dela já cuida do resto
+      opts.imageTag
     ];
 
-    // Montagem de binds se existir
-    const bindArgs = Array.isArray(opts.binds)
-      ? opts.binds.flatMap(b => ['-v', b])
-      : [];
-
-    // Variáveis de ambiente
-    const envArgs = Array.isArray(opts.envVars)
-      ? opts.envVars.flatMap(v => ['-e', v])
-      : [];
-
-    // Comando interno que executa ambos os scripts
-    const cmd = 'python automation.py & python HoneygainPot/automation_claimpot.py & tail -f /dev/null';
-
-    const args = [
-      ...baseArgs,
-      ...bindArgs,
-      ...envArgs,
-      opts.imageTag,
-      'sh', '-c', cmd
-    ];
-
-    // Executa o docker CLI
+    console.log('[main] docker run args:', args.join(' '));
     const proc = spawn('docker', args);
 
     let containerId = '';
     proc.stdout.on('data', data => { containerId += data.toString(); });
-    proc.stderr.on('data', data => { console.error('[docker run error]', data.toString()); });
+    proc.stderr.on('data', data => {
+      console.error('[docker run error]', data.toString());
+    });
     proc.on('error', reject);
     proc.on('close', code => {
-      if (code === 0 && containerId) resolve(containerId.trim());
-      else reject(new Error(`docker run exited with code ${code}`));
+      if (code === 0 && containerId) {
+        resolve(containerId.trim());
+      } else {
+        reject(new Error(`docker run exited with code ${code}`));
+      }
     });
   });
 });
+
 
 ipcMain.handle('start-container', async (event, id) => {
   const container = docker.getContainer(id);
@@ -135,7 +132,15 @@ ipcMain.handle('electron:get-app-path', () => {
   return app.getAppPath();
 });
 
-app.whenReady().then(createWindow);
+
+app.whenReady().then(() => {
+  protocol.registerFileProtocol('app', (request, callback) => {
+    const url = request.url.replace('app:///', '');
+    callback({ path: path.join(__dirname, '../dist', url) });
+  });
+  createWindow();
+});
+
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
