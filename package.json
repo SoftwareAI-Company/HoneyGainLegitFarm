@@ -2,10 +2,11 @@
   "name": "vite_react_shadcn_ts",
   "productName": "HoneyGain Legit Farm",
   "private": true,
-  "version": "1.2.3",
+  "version": "1.0.0",
   "type": "module",
   "main": "electron/main.cjs",
   "scripts": {
+    "build": "vite build",
     "build:dev": "vite build --mode development",
     "electron": "concurrently \"npm run build:dev && wait-on file:dist/index.html\" \"electron electron/main.cjs\"",
     "dev": "npm run electron"
